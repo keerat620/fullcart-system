@@ -35,7 +35,7 @@ class User {
     }
 
     public function login() {
-        $query = "SELECT id, name, password, role FROM " . $this->table_name . " WHERE email = :email LIMIT 0,1";
+        $query = "SELECT id, name, password, role FROM " . $this->table_name . " WHERE email = :email LIMIT 1";
         $stmt = $this->conn->prepare($query);
 
         $this->email = htmlspecialchars(strip_tags($this->email));
@@ -56,7 +56,7 @@ class User {
     }
 
     public function emailExists() {
-        $query = "SELECT id FROM " . $this->table_name . " WHERE email = :email LIMIT 0,1";
+        $query = "SELECT id FROM " . $this->table_name . " WHERE email = :email LIMIT 1";
         $stmt = $this->conn->prepare($query);
         $this->email = htmlspecialchars(strip_tags($this->email));
         $stmt->bindParam(":email", $this->email);

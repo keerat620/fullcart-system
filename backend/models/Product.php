@@ -53,7 +53,7 @@ class Product {
         $query = "SELECT p.*, pi.image_url 
                   FROM " . $this->table_name . " p 
                   LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
-                  WHERE p.id = ? LIMIT 0,1";
+                  WHERE p.id = ? LIMIT 1";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(1, $id);
         $stmt->execute();
