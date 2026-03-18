@@ -4,38 +4,134 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Orders - Fullcart</title>
+    <script src="js/config.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #eaeded; margin: 0; }
-        header { background-color: #232f3e; color: white; padding: 15px 40px; }
-        header a { color: #f0a500; text-decoration: none; font-size: 24px; font-weight: bold; }
-        main { max-width: 900px; margin: 20px auto; padding: 0 20px; }
+        :root { --amazon-blue: #131921; --amazon-light-blue: #232f3e; --amazon-yellow: #febd69; --amazon-orange: #f08804; --amazon-gray: #f3f3f3; }
+        body { font-family: "Amazon Ember", Arial, sans-serif; margin: 0; padding: 0; background-color: #eaeded; overflow-x: hidden; }
+        
+        /* Nav Bar */
+        header { background-color: var(--amazon-blue); color: white; padding: 10px 20px; position: sticky; top: 0; z-index: 100; }
+        .header-top { display: flex; align-items: center; gap: 15px; }
+        .logo-text { color: white; font-size: 24px; font-weight: bold; text-decoration: none; display: flex; align-items: center; min-width: 120px; }
+        .logo-text span { color: var(--amazon-orange); }
+        
+        .nav-location { display: flex; align-items: center; cursor: pointer; padding: 5px; border: 1px solid transparent; }
+        .nav-location:hover { border: 1px solid white; }
+        .nav-location div { display: flex; flex-direction: column; margin-left: 5px; }
+        .loc-1 { font-size: 12px; color: #ccc; }
+        .loc-2 { font-size: 14px; font-weight: bold; }
+
+        .search-bar { flex-grow: 1; display: flex; height: 40px; }
+        .search-bar select { padding: 0 10px; background: #f3f3f3; border: none; border-radius: 4px 0 0 4px; border-right: 1px solid #ddd; cursor: pointer; }
+        .search-bar input { flex-grow: 1; border: none; padding: 0 15px; font-size: 16px; outline: none; }
+        .search-bar button { padding: 0 15px; background-color: var(--amazon-yellow); border: none; border-radius: 0 4px 4px 0; cursor: pointer; font-size: 20px; }
+        
+        .nav-links { display: flex; gap: 15px; font-size: 14px; }
+        .nav-links a { color: white; text-decoration: none; display: flex; flex-direction: column; padding: 5px; border: 1px solid transparent; }
+        .nav-links a:hover { border: 1px solid white; }
+        .nav-links .line-1 { font-size: 12px; }
+        .nav-links .line-2 { font-weight: bold; }
+        
+        .header-bottom { background-color: var(--amazon-light-blue); padding: 5px 20px; display: flex; align-items: center; gap: 15px; font-size: 14px; color: white; }
+        .header-bottom span { cursor: pointer; padding: 5px; border: 1px solid transparent; display: flex; align-items: center; gap: 5px; }
+        .header-bottom span:hover { border: 1px solid white; }
+
+        /* Sidebar */
+        .sidebar { position: fixed; left: -365px; top: 0; width: 350px; height: 100%; background: white; z-index: 1000; transition: 0.3s; box-shadow: 5px 0 15px rgba(0,0,0,0.3); overflow-y: auto; }
+        .sidebar.active { left: 0; }
+        .sidebar-header { background: var(--amazon-light-blue); color: white; padding: 15px 30px; font-size: 19px; font-weight: bold; }
+        .sidebar-content { padding: 20px 0; color: #111; }
+        .sidebar-content h3 { padding: 0 30px; font-size: 18px; margin: 15px 0 10px 0; }
+        .sidebar-content a { display: block; padding: 10px 30px; text-decoration: none; color: #111; font-size: 14px; }
+        .sidebar-content a:hover { background: #eaeded; }
+        .overlay { position: fixed; display: none; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 999; }
+        .overlay.active { display: block; }
+
+        main { max-width: 1000px; margin: 20px auto; padding: 0 20px; }
         .order-card { background: white; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 25px; overflow: hidden; }
         .order-header { background-color: #f0f2f2; padding: 15px 20px; border-bottom: 1px solid #ddd; display: flex; gap: 30px; font-size: 12px; color: #565959; }
         .order-header strong { display: block; color: #111; font-size: 14px; }
         .order-body { padding: 20px; }
         .item-list { list-style: none; padding: 0; margin: 0; }
         .item-list li { display: flex; align-items: center; margin-bottom: 15px; }
-        .item-list img { width: 80px; height: 80px; object-fit: contain; }
-        .item-info { margin-left: 20px; }
+        .item-list img { width: 100px; height: 100px; object-fit: contain; }
+        .item-info { margin-left: 20px; flex-grow: 1; }
         .order-status { color: #007600; font-weight: bold; font-size: 18px; margin-bottom: 15px; }
+        
+        footer { background-color: var(--amazon-light-blue); color: white; padding: 40px 0; text-align: center; margin-top: 40px; }
     </style>
-    <script src="js/config.js"></script>
 </head>
 <body>
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header" id="sidebar-user">👤 Hello, Sign in</div>
+        <div class="sidebar-content">
+            <h3>Trending</h3>
+            <a href="index.html">Best Sellers</a><a href="index.html">New Releases</a>
+            <hr>
+            <h3>Digital Content</h3>
+            <a href="#">Amazon miniTV</a><a href="#">Fire TV</a>
+            <hr>
+            <h3>Settings</h3>
+            <a href="login.html" id="sidebar-auth-link">Sign In</a>
+        </div>
+    </div>
+
     <header>
-        <a href="index.html">Fullcart</a>
+        <div class="header-top">
+            <a href="index.html" class="logo-text">fullcart<span>.in</span></a>
+            <div class="nav-location"><div><span class="loc-1">Deliver to</span><span class="loc-2" id="loc-user">Guest</span></div></div>
+            <div class="search-bar">
+                <select id="category-filter"><option value="">All</option></select>
+                <input type="text" id="search-input" placeholder="Search Fullcart.in">
+                <button id="search-button">🔍</button>
+            </div>
+            <div class="nav-links" id="nav-links">
+                <a href="login.html" id="user-display"><span class="line-1">Hello, Sign in</span><span class="line-2">Account</span></a>
+                <a href="cart.html" id="cart-count"><span class="line-1">Cart</span><span class="line-2">🛒 (0)</span></a>
+            </div>
+        </div>
     </header>
+    
+    <div class="header-bottom">
+        <span onclick="toggleSidebar()">☰ All</span>
+        <span>Best Sellers</span><span>Mobiles</span><span>Deals</span><span>Electronics</span>
+    </div>
 
     <main>
-        <h1>Your Orders</h1>
+        <h1 style="font-weight: 400; font-size: 28px;">Your Orders</h1>
+        <div style="display: flex; gap: 20px; border-bottom: 1px solid #ddd; margin-bottom: 20px;">
+            <p style="border-bottom: 2px solid var(--amazon-orange); padding-bottom: 10px; margin-bottom: -1px; color: #111;">Orders</p>
+            <p style="color: #565959;">Buy Again</p>
+            <p style="color: #565959;">Not Yet Shipped</p>
+            <p style="color: #565959;">Cancelled Orders</p>
+        </div>
         <div id="orders-container">Loading your orders...</div>
     </main>
 
+    <footer>
+        <div onclick="window.scrollTo({top: 0, behavior: 'smooth'})" style="background:#37475a; padding:15px; cursor:pointer">Back to top</div>
+        <div style="padding:40px">
+            <p>&copy; 1996-2026, Fullcart.com, Inc. or its affiliates</p>
+        </div>
+    </footer>
+
     <script>
         const user = JSON.parse(localStorage.getItem('user'));
-        if(!user) window.location.href = 'login.html';
+        
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
+
+        function updateCartCount() {
+            if(!user) return;
+            fetch(`${CONFIG.API_BASE}/cart/index.php?user_id=${user.id}`).then(res => res.json()).then(data => {
+                const count = data.records ? data.records.reduce((acc, item) => acc + parseInt(item.quantity), 0) : 0;
+                document.getElementById('cart-count').innerHTML = `<span class="line-1">Cart</span><span class="line-2">🛒 (${count})</span>`;
+            });
+        }
 
         async function loadOrders() {
+            if(!user) { window.location.href = 'login.html'; return; }
+
             const res = await fetch(`${CONFIG.API_BASE}/orders/index.php?user_id=${user.id}`);
             const data = await res.json();
             const container = document.getElementById('orders-container');
@@ -43,24 +139,27 @@
             if(data.records && data.records.length > 0) {
                 let html = '';
                 data.records.forEach(order => {
-                    const date = new Date(order.created_at).toLocaleDateString();
+                    const date = new Date(order.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
                     html += `
                         <div class="order-card">
                             <div class="order-header">
                                 <div>ORDER PLACED<br><strong>${date}</strong></div>
-                                <div>TOTAL<br><strong>$${parseFloat(order.total_amount).toFixed(2)}</strong></div>
+                                <div>TOTAL<br><strong>₹${parseFloat(order.total_amount).toFixed(2)}</strong></div>
                                 <div>SHIP TO<br><strong>${user.name}</strong></div>
                                 <div style="margin-left: auto;">ORDER # ${order.id}</div>
                             </div>
                             <div class="order-body">
-                                <div class="order-status">${order.status.toUpperCase()}</div>
+                                <div class="order-status">Delivered ${date}</div>
+                                <p style="font-size: 14px; color: #565959; margin-bottom: 20px;">Your package was delivered. It was handed directly to a resident.</p>
                                 <ul class="item-list">
                                     ${order.items.map(item => `
                                         <li>
                                             <img src="${item.image_url}" alt="${item.title}">
                                             <div class="item-info">
-                                                <strong>${item.title}</strong>
-                                                <p style="margin: 5px 0;">Qty: ${item.quantity} at $${parseFloat(item.price).toFixed(2)}</p>
+                                                <a href="#" style="color: #007185; text-decoration: none; font-size: 14px; font-weight: 500;">${item.title}</a>
+                                                <p style="margin: 5px 0; font-size: 12px; color: #565959;">Return window closed on ${date}</p>
+                                                <button style="background-color: #ffd814; border: 1px solid #fcd200; border-radius: 8px; padding: 5px 15px; cursor: pointer; font-size: 12px; margin-right: 10px;">Buy it again</button>
+                                                <button style="background-color: white; border: 1px solid #ddd; border-radius: 8px; padding: 5px 15px; cursor: pointer; font-size: 12px;">View your item</button>
                                             </div>
                                         </li>
                                     `).join('')}
@@ -70,11 +169,26 @@
                 });
                 container.innerHTML = html;
             } else {
-                container.innerHTML = '<div style="background: white; padding: 30px; text-align: center;">You have not placed any orders yet.</div>';
+                container.innerHTML = '<div style="background: white; padding: 30px; text-align: center; border: 1px solid #ddd; border-radius: 8px;">You have not placed any orders yet.</div>';
             }
         }
 
-        loadOrders();
+        document.addEventListener('DOMContentLoaded', () => {
+            if (user) {
+                document.getElementById('user-display').innerHTML = `<span class="line-1">Hello, ${user.name.split(' ')[0]}</span><span class="line-2">Account</span>`;
+                document.getElementById('loc-user').textContent = user.name.split(' ')[0];
+                document.getElementById('sidebar-user').textContent = `👤 Hello, ${user.name.split(' ')[0]}`;
+                document.getElementById('sidebar-auth-link').textContent = 'Sign Out';
+                document.getElementById('sidebar-auth-link').href = '#';
+                document.getElementById('sidebar-auth-link').onclick = (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('user');
+                    window.location.reload();
+                };
+                updateCartCount();
+            }
+            loadOrders();
+        });
     </script>
 </body>
 </html>

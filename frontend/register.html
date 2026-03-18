@@ -3,33 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Account - Fullcart</title>
+    <title>Amazon Registration</title>
+    <script src="js/config.js"></script>
     <style>
-        body { font-family: "Amazon Ember", Arial, sans-serif; background-color: #fff; display: flex; flex-direction: column; align-items: center; padding-top: 20px; }
-        .logo { color: #000; font-size: 32px; font-weight: bold; text-decoration: none; margin-bottom: 20px; }
-        .auth-container { width: 350px; border: 1px solid #ddd; border-radius: 8px; padding: 20px 26px; box-shadow: 0 1px 0 rgba(255,255,255,.5) inset; }
-        h1 { font-size: 28px; font-weight: 400; margin-bottom: 20px; }
+        :root { --amazon-blue: #131921; --amazon-light-blue: #232f3e; --amazon-yellow: #febd69; --amazon-orange: #f08804; --amazon-gray: #f3f3f3; }
+        body { font-family: "Amazon Ember", Arial, sans-serif; background-color: #fff; display: flex; flex-direction: column; align-items: center; padding-top: 20px; margin: 0; }
+        .logo-text { color: #000; font-size: 32px; font-weight: bold; text-decoration: none; margin-bottom: 20px; display: flex; align-items: center; }
+        .logo-text span { color: var(--amazon-orange); }
+        
+        .auth-container { width: 350px; border: 1px solid #ddd; border-radius: 8px; padding: 20px 26px; box-shadow: none; }
+        h1 { font-size: 28px; font-weight: 400; margin-bottom: 20px; margin-top: 0; }
         .form-group { margin-bottom: 15px; }
-        label { display: block; font-size: 13px; font-weight: 700; padding-left: 2px; padding-bottom: 2px; }
-        input { width: 100%; padding: 7px 10px; border: 1px solid #a6a6a6; border-radius: 3px; box-sizing: border-box; }
+        label { display: block; font-size: 13px; font-weight: bold; padding-bottom: 2px; }
+        input { width: 100%; padding: 7px 10px; border: 1px solid #a6a6a6; border-radius: 3px; box-sizing: border-box; font-family: inherit; }
         input:focus { border-color: #e77600; box-shadow: 0 0 3px 2px rgba(228,121,17,.5); outline: 0; }
-        .btn-submit { background: linear-gradient(to bottom,#f7dfa5,#f0c14b); border: 1px solid; border-color: #a88734 #9c7e31 #846a29; border-radius: 3px; color: #111; cursor: pointer; display: inline-block; padding: 0; text-align: center; text-decoration: none; vertical-align: middle; width: 100%; height: 31px; font-size: 13px; margin-top: 20px; }
-        .btn-submit:hover { background: linear-gradient(to bottom,#f5d78e,#eeb933); }
-        .legal { font-size: 12px; margin-top: 20px; line-height: 1.5; color: #555; }
+        
+        .btn-submit { background-color: #ffd814; border: 1px solid #fcd200; border-radius: 8px; color: #111; cursor: pointer; display: block; width: 100%; height: 35px; font-size: 13px; margin-top: 20px; font-family: inherit; }
+        .btn-submit:hover { background-color: #f7ca00; }
+        
+        .legal { font-size: 12px; margin-top: 20px; line-height: 1.5; color: #111; }
+        .legal a { color: #0066c0; text-decoration: none; }
+        .legal a:hover { color: #c45500; text-decoration: underline; }
+        
         #message { margin-top: 15px; font-size: 13px; text-align: center; padding: 10px; border-radius: 4px; display: none; }
         .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        
+        footer { margin-top: 40px; border-top: 1px solid #eee; width: 100%; padding: 20px 0; display: flex; flex-direction: column; align-items: center; background: linear-gradient(to bottom,rgba(0,0,0,0),rgba(0,0,0,.03)); }
+        .footer-links { display: flex; gap: 30px; margin-bottom: 10px; }
+        .footer-links a { color: #0066c0; text-decoration: none; font-size: 11px; }
+        .footer-copy { font-size: 11px; color: #555; }
     </style>
-    <script src="js/config.js"></script>
 </head>
 <body>
-    <a href="index.html" class="logo">Fullcart</a>
+    <a href="index.html" class="logo-text">fullcart<span>.in</span></a>
+
     <div class="auth-container">
-        <h1>Create account</h1>
+        <h1>Create Account</h1>
         <form id="registerForm">
             <div class="form-group">
                 <label for="name">Your name</label>
-                <input type="text" id="name" required>
+                <input type="text" id="name" placeholder="First and last name" required>
             </div>
             <div class="form-group">
                 <label for="email">Email</label>
@@ -37,16 +51,37 @@
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" required minlength="6">
+                <input type="password" id="password" placeholder="At least 6 characters" required minlength="6">
+                <p style="font-size: 12px; color: #555; margin-top: 5px;"><i>i</i> Passwords must be at least 6 characters.</p>
             </div>
-            <div class="form-group" style="display: flex; align-items: center;">
+            <div class="form-group" style="display: flex; align-items: center; margin-top: 20px;">
                 <input type="checkbox" id="is_seller" style="width: auto; margin-right: 10px;">
-                <label for="is_seller" style="font-weight: normal; padding: 0;">I want to sell on Fullcart</label>
+                <label for="is_seller" style="font-weight: normal; padding: 0; font-size: 14px;">I want to sell on Fullcart</label>
             </div>
-            <button type="submit" class="btn-submit">Create your Fullcart account</button>
+            <button type="submit" class="btn-submit">Continue</button>
         </form>
+
         <div id="message"></div>
+
+        <div class="legal">
+            By creating an account, you agree to Fullcart's <a href="#">Conditions of Use</a> and <a href="#">Privacy Notice</a>.
+        </div>
+        
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+        
+        <div style="font-size: 13px;">
+            Already have an account? <a href="login.html" style="color: #0066c0; text-decoration: none;">Sign in </a>
+        </div>
     </div>
+
+    <footer>
+        <div class="footer-links">
+            <a href="#">Conditions of Use</a>
+            <a href="#">Privacy Notice</a>
+            <a href="#">Help</a>
+        </div>
+        <div class="footer-copy">© 1996-2026, Fullcart.com, Inc. or its affiliates</div>
+    </footer>
 
     <script>
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
@@ -70,7 +105,7 @@
             msgDiv.textContent = result.message;
             msgDiv.style.display = 'block';
             msgDiv.className = result.status === 'success' ? 'success' : 'error';
-            if(result.status === 'success') setTimeout(() => window.location.href = 'login.html', 2000);
+            if(result.status === 'success') setTimeout(() => window.location.href = 'login.html', 1500);
         });
     </script>
 </body>
