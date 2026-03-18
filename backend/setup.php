@@ -13,17 +13,19 @@ try {
     // On cloud hosts, we don't 'CREATE DATABASE', we just use the one provided.
     // The Database class already selects the correct DB.
     
+    $is_pgsql = (strpos($db->getAttribute(PDO::ATTR_DRIVER_NAME), 'pgsql') !== false);
+    
     $tables = [
         "CREATE TABLE IF NOT EXISTS users (
-            id INT AUTO_INCREMENT PRIMARY KEY,
+            id SERIAL PRIMARY KEY,
             name VARCHAR(255) NOT NULL,
             email VARCHAR(255) NOT NULL UNIQUE,
             password VARCHAR(255) NOT NULL,
-            role ENUM('customer', 'seller', 'admin') DEFAULT 'customer',
+            role VARCHAR(50) DEFAULT 'customer',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )",
         "CREATE TABLE IF NOT EXISTS categories (
-            id INT AUTO_INCREMENT PRIMARY KEY,
+            id SERIAL PRIMARY KEY,
             name VARCHAR(255) NOT NULL,
             slug VARCHAR(255) NOT NULL UNIQUE,
             parent_id INT DEFAULT NULL,
@@ -31,7 +33,7 @@ try {
             FOREIGN KEY (parent_id) REFERENCES categories(id) ON DELETE SET NULL
         )",
         "CREATE TABLE IF NOT EXISTS products (
-            id INT AUTO_INCREMENT PRIMARY KEY,
+            id SERIAL PRIMARY KEY,
             seller_id INT NOT NULL,
             category_id INT NOT NULL,
             title VARCHAR(255) NOT NULL,
@@ -44,14 +46,14 @@ try {
             FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
         )",
         "CREATE TABLE IF NOT EXISTS product_images (
-            id INT AUTO_INCREMENT PRIMARY KEY,
+            id SERIAL PRIMARY KEY,
             product_id INT NOT NULL,
             image_url VARCHAR(255) NOT NULL,
             is_primary BOOLEAN DEFAULT FALSE,
             FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
         )",
         "CREATE TABLE IF NOT EXISTS cart_items (
-            id INT AUTO_INCREMENT PRIMARY KEY,
+            id SERIAL PRIMARY KEY,
             user_id INT NOT NULL,
             product_id INT NOT NULL,
             quantity INT DEFAULT 1,
@@ -60,16 +62,16 @@ try {
             FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
         )",
         "CREATE TABLE IF NOT EXISTS orders (
-            id INT AUTO_INCREMENT PRIMARY KEY,
+            id SERIAL PRIMARY KEY,
             user_id INT NOT NULL,
             total_amount DECIMAL(10, 2) NOT NULL,
-            status ENUM('pending', 'processing', 'shipped', 'delivered', 'cancelled') DEFAULT 'pending',
+            status VARCHAR(50) DEFAULT 'pending',
             shipping_address TEXT NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
         )",
         "CREATE TABLE IF NOT EXISTS order_items (
-            id INT AUTO_INCREMENT PRIMARY KEY,
+            id SERIAL PRIMARY KEY,
             order_id INT NOT NULL,
             product_id INT NOT NULL,
             quantity INT NOT NULL,
@@ -78,7 +80,7 @@ try {
             FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
         )",
         "CREATE TABLE IF NOT EXISTS reviews (
-            id INT AUTO_INCREMENT PRIMARY KEY,
+            id SERIAL PRIMARY KEY,
             product_id INT NOT NULL,
             user_id INT NOT NULL,
             rating INT NOT NULL,

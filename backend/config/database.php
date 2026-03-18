@@ -17,8 +17,16 @@ class Database {
     public function getConnection() {
         $this->conn = null;
         try {
-            $this->conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->db_name, $this->username, $this->password);
-            $this->conn->exec("set names utf8");
+            // Support both MySQL (local) and PostgreSQL (Render)
+            $dsn = "pgsql:host=" . $this->host . ";port=5432;dbname=" . $this->db_name;
+            if (strpos($this->host, 'localhost') !== false || strpos($this->host, '127.0.0.1') !== false) {
+                 $dsn = "mysql:host=" . $this->host . ";dbname=" . $this->db_name;
+            }
+            $this->conn = new PDO($dsn, $this->username, $this->password);
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            if (strpos($dsn, 'mysql') !== false) {
+                $this->conn->exec("set names utf8");
+            }
         } catch(PDOException $exception) {
             // Log error instead of echoing in production
             error_log("Connection error: " . $exception->getMessage());
