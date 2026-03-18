@@ -1,5 +1,3 @@
 const CONFIG = {
-    API_BASE: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-        ? '../backend/api' 
-        : 'https://fullcart-backend.onrender.com/api'
+    API_BASE: 'https://fullcart-backend.onrender.com/api'
 };
