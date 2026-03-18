@@ -1,9 +1,10 @@
 services:
   - type: web
     name: fullcart-backend
-    env: php
+    env: docker
     plan: free
-    rootDir: backend
+    dockerContext: backend
+    dockerfilePath: Dockerfile
     envVars:
       - key: DB_HOST
         fromDatabase:
