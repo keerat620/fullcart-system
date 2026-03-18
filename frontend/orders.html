@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Orders - Fullcart</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #eaeded; margin: 0; }
+        header { background-color: #232f3e; color: white; padding: 15px 40px; }
+        header a { color: #f0a500; text-decoration: none; font-size: 24px; font-weight: bold; }
+        main { max-width: 900px; margin: 20px auto; padding: 0 20px; }
+        .order-card { background: white; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 25px; overflow: hidden; }
+        .order-header { background-color: #f0f2f2; padding: 15px 20px; border-bottom: 1px solid #ddd; display: flex; gap: 30px; font-size: 12px; color: #565959; }
+        .order-header strong { display: block; color: #111; font-size: 14px; }
+        .order-body { padding: 20px; }
+        .item-list { list-style: none; padding: 0; margin: 0; }
+        .item-list li { display: flex; align-items: center; margin-bottom: 15px; }
+        .item-list img { width: 80px; height: 80px; object-fit: contain; }
+        .item-info { margin-left: 20px; }
+        .order-status { color: #007600; font-weight: bold; font-size: 18px; margin-bottom: 15px; }
+    </style>
+    <script src="js/config.js"></script>
+</head>
+<body>
+    <header>
+        <a href="index.html">Fullcart</a>
+    </header>
+
+    <main>
+        <h1>Your Orders</h1>
+        <div id="orders-container">Loading your orders...</div>
+    </main>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+        if(!user) window.location.href = 'login.html';
+
+        async function loadOrders() {
+            const res = await fetch(`${CONFIG.API_BASE}/orders/index.php?user_id=${user.id}`);
+            const data = await res.json();
+            const container = document.getElementById('orders-container');
+            
+            if(data.records && data.records.length > 0) {
+                let html = '';
+                data.records.forEach(order => {
+                    const date = new Date(order.created_at).toLocaleDateString();
+                    html += `
+                        <div class="order-card">
+                            <div class="order-header">
+                                <div>ORDER PLACED<br><strong>${date}</strong></div>
+                                <div>TOTAL<br><strong>$${parseFloat(order.total_amount).toFixed(2)}</strong></div>
+                                <div>SHIP TO<br><strong>${user.name}</strong></div>
+                                <div style="margin-left: auto;">ORDER # ${order.id}</div>
+                            </div>
+                            <div class="order-body">
+                                <div class="order-status">${order.status.toUpperCase()}</div>
+                                <ul class="item-list">
+                                    ${order.items.map(item => `
+                                        <li>
+                                            <img src="${item.image_url}" alt="${item.title}">
+                                            <div class="item-info">
+                                                <strong>${item.title}</strong>
+                                                <p style="margin: 5px 0;">Qty: ${item.quantity} at $${parseFloat(item.price).toFixed(2)}</p>
+                                            </div>
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                            </div>
+                        </div>`;
+                });
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = '<div style="background: white; padding: 30px; text-align: center;">You have not placed any orders yet.</div>';
+            }
+        }
+
+        loadOrders();
+    </script>
+</body>
+</html>

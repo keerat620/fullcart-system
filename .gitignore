@@ -1,0 +1,17 @@
+# Fullcart Git Ignore
+# Mobile
+mobile/.dart_tool/
+mobile/.packages
+mobile/.pub/
+mobile/build/
+mobile/android/app/release/
+mobile/*.apk
+
+# Backend
+backend/api/uploads/*
+!backend/api/uploads/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+.env

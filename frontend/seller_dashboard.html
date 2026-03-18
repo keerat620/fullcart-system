@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Dashboard - Fullcart Central</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background-color: #eaeded; }
+        header { background-color: #232f3e; color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .dashboard-container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
+        .card { background: white; padding: 20px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        h1, h2 { color: #111; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #ddd; }
+        th { background-color: #f7f7f7; }
+        .btn { padding: 8px 16px; border-radius: 4px; cursor: pointer; border: 1px solid #adb1b8; background: #e7e9ec; font-size: 13px; }
+        .btn-primary { background: #f0c14b; border-color: #a88734; }
+        .btn-danger { background: #d9534f; color: white; border: none; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select, textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; }
+        .modal-content { background: white; width: 500px; margin: 50px auto; padding: 30px; border-radius: 8px; position: relative; max-height: 90vh; overflow-y: auto; }
+    </style>
+    <script src="js/config.js"></script>
+</head>
+<body>
+    <header>
+        <a href="index.html" style="color: #f0a500; text-decoration: none; font-size: 20px; font-weight: bold;">Fullcart Central</a>
+        <div id="seller-info">Hello, <span id="seller-name">Seller</span> | <a href="#" onclick="logout()" style="color: white;">Logout</a></div>
+    </header>
+
+    <div class="dashboard-container">
+        <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+            <h1>Inventory Management</h1>
+            <button class="btn btn-primary" onclick="openModal()">+ Add New Product</button>
+        </div>
+
+        <div class="card">
+            <h2>Your Products</h2>
+            <table id="product-table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Title</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="product-list">
+                    <tr><td colspan="5">Loading your products...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add/Edit Product Modal -->
+    <div id="modal">
+        <div class="modal-content">
+            <h2 id="modal-title">Add New Product</h2>
+            <form id="product-form">
+                <input type="hidden" id="product-id">
+                <div class="form-group">
+                    <label>Product Title</label>
+                    <input type="text" id="title" required>
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="category_id" required>
+                        <option value="">Select Category</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Price ($)</label>
+                    <input type="number" step="0.01" id="price" required>
+                </div>
+                <div class="form-group">
+                    <label>Stock Quantity</label>
+                    <input type="number" id="stock" required>
+                </div>
+                <div class="form-group">
+                    <label>Product Image (Upload File)</label>
+                    <input type="file" id="image_file" accept="image/*">
+                    <p style="font-size: 11px; color: #666; margin-top: 5px;">OR provide a direct URL below:</p>
+                    <input type="url" id="image_url" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="description" rows="3"></textarea>
+                </div>
+                <div style="text-align: right;">
+                    <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="btn-save">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+        if(!user || (user.role !== 'seller' && user.role !== 'admin')) {
+            window.location.href = 'index.html';
+        }
+        document.getElementById('seller-name').textContent = user.name;
+
+        function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+
+        function loadCategories() {
+            fetch(CONFIG.API_BASE + '/categories/list.php')
+                .then(res => res.json())
+                .then(data => {
+                    const select = document.getElementById('category_id');
+                    data.records.forEach(cat => {
+                        const opt = document.createElement('option'); opt.value = cat.id; opt.textContent = cat.name;
+                        select.appendChild(opt);
+                    });
+                });
+        }
+
+        function loadProducts() {
+            fetch(`${CONFIG.API_BASE}/seller/products.php?seller_id=${user.id}`)
+                .then(res => res.json())
+                .then(data => {
+                    const list = document.getElementById('product-list');
+                    if(data.records && data.records.length > 0) {
+                        let html = '';
+                        data.records.forEach(p => {
+                            html += `
+                                <tr>
+                                    <td><img src="${p.image_url}" width="50" height="50" style="object-fit: contain;"></td>
+                                    <td>${p.title}</td>
+                                    <td>$${parseFloat(p.price).toFixed(2)}</td>
+                                    <td>${p.stock}</td>
+                                    <td>
+                                        <button class="btn" onclick="editProduct(${p.id})">Edit</button>
+                                        <button class="btn btn-danger" onclick="deleteProduct(${p.id})">Delete</button>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                        list.innerHTML = html;
+                    } else {
+                        list.innerHTML = '<tr><td colspan="5">You have no products yet.</td></tr>';
+                    }
+                });
+        }
+
+        function openModal() {
+            document.getElementById('product-form').reset();
+            document.getElementById('product-id').value = '';
+            document.getElementById('modal-title').textContent = 'Add New Product';
+            document.getElementById('modal').style.display = 'block';
+        }
+
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
+
+        document.getElementById('product-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const saveBtn = document.getElementById('btn-save');
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Uploading...';
+
+            let finalImageUrl = document.getElementById('image_url').value;
+            const fileInput = document.getElementById('image_file');
+            
+            // Handle file upload if a file is selected
+            if (fileInput.files.length > 0) {
+                const formData = new FormData();
+                formData.append('file', fileInput.files[0]);
+                const uploadRes = await fetch(CONFIG.API_BASE + '/uploads/index.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const uploadResult = await uploadRes.json();
+                if(uploadResult.status === 'success') {
+                    finalImageUrl = uploadResult.url;
+                }
+            }
+
+            const id = document.getElementById('product-id').value;
+            const data = {
+                id: id,
+                seller_id: user.id,
+                title: document.getElementById('title').value,
+                category_id: document.getElementById('category_id').value,
+                price: document.getElementById('price').value,
+                stock: document.getElementById('stock').value,
+                image_url: finalImageUrl,
+                description: document.getElementById('description').value
+            };
+
+            const method = id ? 'PUT' : 'POST';
+            const res = await fetch(CONFIG.API_BASE + '/seller/products.php', {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Save Product';
+            if(res.ok) { closeModal(); loadProducts(); }
+        };
+
+        async function editProduct(id) {
+            const res = await fetch(`${CONFIG.API_BASE}/seller/products.php?seller_id=${user.id}&id=${id}`);
+            const p = await res.json();
+            document.getElementById('product-id').value = p.id;
+            document.getElementById('title').value = p.title;
+            document.getElementById('category_id').value = p.category_id;
+            document.getElementById('price').value = p.price;
+            document.getElementById('stock').value = p.stock;
+            document.getElementById('image_url').value = p.image_url || '';
+            document.getElementById('description').value = p.description || '';
+            document.getElementById('modal-title').textContent = 'Edit Product';
+            document.getElementById('modal').style.display = 'block';
+        }
+
+        async function deleteProduct(id) {
+            if(confirm('Are you sure you want to delete this product?')) {
+                await fetch(`${CONFIG.API_BASE}/seller/products.php?seller_id=${user.id}&id=${id}`, { method: 'DELETE' });
+                loadProducts();
+            }
+        }
+
+        loadCategories();
+        loadProducts();
+    </script>
+</body>
+</html>

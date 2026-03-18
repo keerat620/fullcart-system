@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - Fullcart</title>
+    <style>
+        body { font-family: "Amazon Ember", Arial, sans-serif; background-color: #fff; display: flex; flex-direction: column; align-items: center; padding-top: 20px; }
+        .logo { color: #000; font-size: 32px; font-weight: bold; text-decoration: none; margin-bottom: 20px; }
+        .auth-container { width: 350px; border: 1px solid #ddd; border-radius: 8px; padding: 20px 26px; box-shadow: 0 1px 0 rgba(255,255,255,.5) inset; }
+        h1 { font-size: 28px; font-weight: 400; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-size: 13px; font-weight: 700; padding-left: 2px; padding-bottom: 2px; }
+        input { width: 100%; padding: 7px 10px; border: 1px solid #a6a6a6; border-radius: 3px; box-sizing: border-box; }
+        input:focus { border-color: #e77600; box-shadow: 0 0 3px 2px rgba(228,121,17,.5); outline: 0; }
+        .btn-submit { background: linear-gradient(to bottom,#f7dfa5,#f0c14b); border: 1px solid; border-color: #a88734 #9c7e31 #846a29; border-radius: 3px; color: #111; cursor: pointer; display: inline-block; padding: 0; text-align: center; text-decoration: none; vertical-align: middle; width: 100%; height: 31px; font-size: 13px; margin-top: 20px; }
+        .btn-submit:hover { background: linear-gradient(to bottom,#f5d78e,#eeb933); }
+        .legal { font-size: 12px; margin-top: 20px; line-height: 1.5; color: #555; }
+        .legal a { color: #0066c0; text-decoration: none; }
+        .legal a:hover { color: #c45500; text-decoration: underline; }
+        .divider { height: 44px; margin-bottom: 22px; text-align: center; position: relative; width: 100%; margin-top: 25px; }
+        .divider h5 { background: #fff; color: #767676; display: inline-block; font-size: 12px; font-weight: 400; line-height: 1; margin: 0; padding: 0 8px; position: relative; z-index: 2; }
+        .divider::after { border-top: 1px solid #e7e7e7; content: ""; display: block; height: 1px; position: absolute; top: 50%; width: 100%; z-index: 1; }
+        .btn-secondary { background: linear-gradient(to bottom,#f7f8fa,#e7e9ec); border: 1px solid #adb1b8; border-radius: 3px; box-shadow: 0 1px 0 rgba(255,255,255,.6) inset; color: #111; cursor: pointer; display: block; font-size: 13px; padding: 7px 0; text-align: center; text-decoration: none; width: 100%; margin-top: 10px; }
+        .btn-secondary:hover { background: linear-gradient(to bottom,#e7ebf0,#d8dee6); }
+        #message { margin-top: 15px; font-size: 13px; text-align: center; padding: 10px; border-radius: 4px; display: none; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+    <script src="js/config.js"></script>
+</head>
+<body>
+    <a href="index.html" class="logo">Fullcart</a>
+
+    <div class="auth-container">
+        <h1>Sign in</h1>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required>
+            </div>
+            <button type="submit" class="btn-submit">Sign-In</button>
+        </form>
+
+        <div id="message"></div>
+
+        <div class="legal">
+            By continuing, you agree to Fullcart's <a href="#">Conditions of Use</a> and <a href="#">Privacy Notice</a>.
+        </div>
+    </div>
+
+    <div class="divider" style="width: 350px;">
+        <h5>New to Fullcart?</h5>
+    </div>
+    <a href="register.html" class="btn-secondary" style="width: 350px;">Create your Fullcart account</a>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const messageDiv = document.getElementById('message');
+            messageDiv.style.display = 'none';
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch(CONFIG.API_BASE + '/auth/login.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    // Save user info to localStorage
+                    localStorage.setItem('user', JSON.stringify(result.user));
+                    localStorage.setItem('token', result.token);
+                    
+                    messageDiv.textContent = "Login successful! Redirecting...";
+                    messageDiv.style.display = 'block';
+                    messageDiv.className = 'success';
+                    
+                    setTimeout(() => window.location.href = 'index.html', 1500);
+                } else {
+                    messageDiv.textContent = result.message;
+                    messageDiv.style.display = 'block';
+                    messageDiv.className = 'error';
+                }
+            } catch (error) {
+                messageDiv.textContent = "Connection error. Please try again.";
+                messageDiv.style.display = 'block';
+                messageDiv.className = 'error';
+            }
+        });
+    </script>
+</body>
+</html>

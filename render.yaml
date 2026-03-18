@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: fullcart-backend
+    env: php
+    plan: free
+    rootDir: backend
+    envVars:
+      - key: DB_HOST
+        fromDatabase:
+          name: fullcart-db
+          property: host
+      - key: DB_NAME
+        fromDatabase:
+          name: fullcart-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: fullcart-db
+          property: user
+      - key: DB_PASS
+        fromDatabase:
+          name: fullcart-db
+          property: password
+
+databases:
+  - name: fullcart-db
+    plan: free

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review your order - Fullcart</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f3f3f3; margin: 0; }
+        header { background-color: #fff; border-bottom: 1px solid #ddd; padding: 15px 40px; text-align: center; }
+        .logo { color: #000; font-size: 24px; font-weight: bold; text-decoration: none; }
+        main { max-width: 1100px; margin: 20px auto; padding: 0 20px; display: flex; gap: 20px; }
+        .checkout-main { flex-grow: 1; }
+        .checkout-section { background: white; padding: 20px; border-radius: 4px; margin-bottom: 20px; border: 1px solid #ddd; }
+        .checkout-section h2 { font-size: 18px; margin-top: 0; color: #c45500; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
+        .summary-box { width: 300px; background: white; padding: 20px; border: 1px solid #ddd; border-radius: 4px; height: fit-content; position: sticky; top: 20px; }
+        .btn-place-order { background: #ffd814; border: 1px solid #fcd200; border-radius: 8px; padding: 10px; width: 100%; cursor: pointer; font-weight: bold; font-size: 14px; margin-top: 15px; }
+        .form-group { margin-top: 15px; }
+        textarea { width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ddd; box-sizing: border-box; }
+        .item-row { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px dotted #ddd; }
+        .item-row img { width: 60px; height: 60px; object-fit: contain; }
+    </style>
+    <script src="js/config.js"></script>
+</head>
+<body>
+    <header>
+        <a href="index.html" class="logo">Fullcart Checkout</a>
+    </header>
+
+    <main>
+        <div class="checkout-main">
+            <div class="checkout-section">
+                <h2>1. Shipping Address</h2>
+                <div class="form-group">
+                    <textarea id="address" rows="3" placeholder="Enter your full shipping address..." required></textarea>
+                </div>
+            </div>
+
+            <div class="checkout-section">
+                <h2>2. Payment Method</h2>
+                <p><strong>Cash on Delivery (COD)</strong> - Pay when you receive your order.</p>
+            </div>
+
+            <div class="checkout-section">
+                <h2>3. Review items and shipping</h2>
+                <div id="items-list">Loading items...</div>
+            </div>
+        </div>
+
+        <div class="summary-box">
+            <button class="btn-place-order" id="btn-submit">Place your order</button>
+            <div style="margin-top: 15px; font-size: 14px;">
+                <p style="display: flex; justify-content: space-between;"><span>Items:</span> <span id="summary-items-price">$0.00</span></p>
+                <p style="display: flex; justify-content: space-between;"><span>Shipping:</span> <span>$0.00</span></p>
+                <hr>
+                <h3 style="display: flex; justify-content: space-between; color: #B12704;"><span>Order Total:</span> <span id="summary-total">$0.00</span></h3>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+        if(!user) window.location.href = 'login.html';
+
+        async function loadReviewItems() {
+            const res = await fetch(`${CONFIG.API_BASE}/cart/index.php?user_id=${user.id}`);
+            const data = await res.json();
+            const list = document.getElementById('items-list');
+            
+            if(data.records && data.records.length > 0) {
+                let html = '';
+                let total = 0;
+                data.records.forEach(item => {
+                    total += item.price * item.quantity;
+                    html += `
+                        <div class="item-row">
+                            <img src="${item.image_url}" alt="${item.title}">
+                            <div style="flex-grow: 1; padding-left: 15px;">
+                                <strong>${item.title}</strong>
+                                <p style="margin: 5px 0; font-size: 12px; color: #B12704;">$${parseFloat(item.price).toFixed(2)}</p>
+                                <p style="margin: 0; font-size: 12px;">Qty: ${item.quantity}</p>
+                            </div>
+                        </div>`;
+                });
+                list.innerHTML = html;
+                document.getElementById('summary-items-price').textContent = `$${total.toFixed(2)}`;
+                document.getElementById('summary-total').textContent = `$${total.toFixed(2)}`;
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+
+        document.getElementById('btn-submit').onclick = async () => {
+            const address = document.getElementById('address').value;
+            if(!address) { alert('Please enter a shipping address.'); return; }
+
+            const btn = document.getElementById('btn-submit');
+            btn.disabled = true;
+            btn.textContent = 'Processing...';
+
+            const res = await fetch(`${CONFIG.API_BASE}/orders/index.php`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: user.id, shipping_address: address })
+            });
+
+            const result = await res.json();
+            if(result.status === 'success') {
+                alert('Thank you! Your order has been placed.');
+                window.location.href = 'orders.html';
+            } else {
+                alert(result.message);
+                btn.disabled = false;
+                btn.textContent = 'Place your order';
+            }
+        };
+
+        loadReviewItems();
+    </script>
+</body>
+</html>
