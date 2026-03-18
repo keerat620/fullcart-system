@@ -39,7 +39,7 @@ try {
     ];
 
     foreach($categories as $cat) {
-        $stmt = $db->prepare("INSERT IGNORE INTO categories (name, slug) VALUES (?, ?)");
+        $stmt = $db->prepare("INSERT INTO categories (name, slug) VALUES (?, ?) ON CONFLICT (slug) DO NOTHING");
         $stmt->execute($cat);
     }
     echo "<p>Categories initialized.</p>";
@@ -57,15 +57,20 @@ try {
     ];
 
     foreach($products as $prod) {
-        // Check if product exists by slug
-        $check = $db->prepare("SELECT id FROM products WHERE slug = ?");
-        $check->execute([$prod[3]]);
-        if (!$check->fetch()) {
-            $stmt = $db->prepare("INSERT INTO products (seller_id, category_id, title, slug, description, price, stock) VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$prod[0], $prod[1], $prod[2], $prod[3], $prod[4], $prod[5], $prod[6]]);
-            $prod_id = $db->lastInsertId();
+        // Use ON CONFLICT for products as well
+        $stmt = $db->prepare("INSERT INTO products (seller_id, category_id, title, slug, description, price, stock) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT (slug) DO NOTHING");
+        $stmt->execute([$prod[0], $prod[1], $prod[2], $prod[3], $prod[4], $prod[5], $prod[6]]);
+        
+        // Find the product ID (either newly inserted or existing)
+        $id_stmt = $db->prepare("SELECT id FROM products WHERE slug = ?");
+        $id_stmt->execute([$prod[3]]);
+        $prod_id = $id_stmt->fetchColumn();
 
-            if($prod_id) {
+        if($prod_id) {
+            // Check if image already exists
+            $img_check = $db->prepare("SELECT id FROM product_images WHERE product_id = ?");
+            $img_check->execute([$prod_id]);
+            if (!$img_check->fetch()) {
                 $stmt = $db->prepare("INSERT INTO product_images (product_id, image_url, is_primary) VALUES (?, ?, 1)");
                 $stmt->execute([$prod_id, $prod[7]]);
             }
