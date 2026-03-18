@@ -1,21 +1,18 @@
 <?php
-$host = "localhost";
-$username = "root";
-$password = "";
+header("Access-Control-Allow-Origin: *");
+include_once 'config/database.php';
+
+$database = new Database();
+$db = $database->getConnection();
+
+if (!$db) {
+    die("Connection failed. Check your Render Environment Variables.");
+}
 
 try {
-    $conn = new PDO("mysql:host=$host", $username, $password);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // On cloud hosts, we don't 'CREATE DATABASE', we just use the one provided.
+    // The Database class already selects the correct DB.
     
-    // Create database
-    $sql = "CREATE DATABASE IF NOT EXISTS fullcart_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
-    $conn->exec($sql);
-    echo "Database created successfully<br>";
-    
-    // Select database
-    $conn->exec("USE fullcart_db");
-    
-    // Create Tables
     $tables = [
         "CREATE TABLE IF NOT EXISTS users (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -84,7 +81,7 @@ try {
             id INT AUTO_INCREMENT PRIMARY KEY,
             product_id INT NOT NULL,
             user_id INT NOT NULL,
-            rating INT NOT NULL CHECK(rating >= 1 AND rating <= 5),
+            rating INT NOT NULL,
             comment TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
@@ -93,12 +90,11 @@ try {
     ];
     
     foreach($tables as $sql) {
-        $conn->exec($sql);
+        $db->exec($sql);
     }
-    echo "Tables created successfully";
+    echo "<h1>Success!</h1><p>Database tables created successfully on Render.</p><a href='seed.php'>Next: Add Products</a>";
     
 } catch(PDOException $e) {
-    echo $sql . "<br>" . $e->getMessage();
+    echo "Error: " . $e->getMessage();
 }
-$conn = null;
 ?>
