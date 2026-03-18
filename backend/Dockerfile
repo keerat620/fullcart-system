@@ -7,7 +7,7 @@ RUN docker-php-ext-install pdo pdo_mysql
 RUN a2enmod rewrite
 
 # Copy backend files to the web root
-COPY . /var/www/html/
+COPY backend/ /var/www/html/
 
 # Set permissions for uploads
 RUN chown -R www-data:www-data /var/www/html
