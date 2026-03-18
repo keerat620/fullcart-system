@@ -71,7 +71,7 @@ try {
             $img_check = $db->prepare("SELECT id FROM product_images WHERE product_id = ?");
             $img_check->execute([$prod_id]);
             if (!$img_check->fetch()) {
-                $stmt = $db->prepare("INSERT INTO product_images (product_id, image_url, is_primary) VALUES (?, ?, 1)");
+                $stmt = $db->prepare("INSERT INTO product_images (product_id, image_url, is_primary) VALUES (?, ?, TRUE)");
                 $stmt->execute([$prod_id, $prod[7]]);
             }
         }

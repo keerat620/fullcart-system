@@ -73,7 +73,7 @@ class Product {
     }
 
     public function create() {
-        $query = "INSERT INTO " . $this->table_name . " SET seller_id=:seller_id, category_id=:category_id, title=:title, slug=:slug, description=:description, price=:price, stock=:stock";
+        $query = "INSERT INTO " . $this->table_name . " (seller_id, category_id, title, slug, description, price, stock) VALUES (:seller_id, :category_id, :title, :slug, :description, :price, :stock)";
         $stmt = $this->conn->prepare($query);
 
         $this->title = htmlspecialchars(strip_tags($this->title));
@@ -120,12 +120,12 @@ class Product {
         return $stmt->execute();
     }
 
-    public function addImage($product_id, $image_url, $is_primary = 0) {
-        $query = "INSERT INTO product_images SET product_id=:product_id, image_url=:image_url, is_primary=:is_primary";
+    public function addImage($product_id, $image_url, $is_primary = false) {
+        $query = "INSERT INTO product_images (product_id, image_url, is_primary) VALUES (:product_id, :image_url, :is_primary)";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":product_id", $product_id);
         $stmt->bindParam(":image_url", $image_url);
-        $stmt->bindParam(":is_primary", $is_primary);
+        $stmt->bindParam(":is_primary", $is_primary, PDO::PARAM_BOOL);
         return $stmt->execute();
     }
 }

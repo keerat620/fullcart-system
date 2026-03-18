@@ -15,29 +15,29 @@ class Order {
         $this->conn = $db;
     }
 
-    public function create($cart_items) {
+    public function create() {
         try {
             $this->conn->beginTransaction();
 
-            // 1. Create Order
-            $query = "INSERT INTO " . $this->table_orders . " SET user_id=:user_id, total_amount=:total_amount, shipping_address=:shipping_address";
+            $query = "INSERT INTO " . $this->table_orders . " (user_id, total_amount, shipping_address) VALUES (:user_id, :total_amount, :shipping_address)";
             $stmt = $this->conn->prepare($query);
+
             $stmt->bindParam(":user_id", $this->user_id);
             $stmt->bindParam(":total_amount", $this->total_amount);
             $stmt->bindParam(":shipping_address", $this->shipping_address);
-            $stmt->execute();
-            
-            $this->id = $this->conn->lastInsertId();
 
-            // 2. Add Order Items
-            foreach($cart_items as $item) {
-                $query_item = "INSERT INTO " . $this->table_items . " SET order_id=:order_id, product_id=:product_id, quantity=:quantity, price=:price";
+            $stmt->execute();
+            $order_id = $this->conn->lastInsertId();
+
+            foreach($this->items as $item) {
+                $query_item = "INSERT INTO " . $this->table_items . " (order_id, product_id, quantity, price) VALUES (:order_id, :product_id, :quantity, :price)";
                 $stmt_item = $this->conn->prepare($query_item);
-                $stmt_item->bindParam(":order_id", $this->id);
+                $stmt_item->bindParam(":order_id", $order_id);
                 $stmt_item->bindParam(":product_id", $item['product_id']);
                 $stmt_item->bindParam(":quantity", $item['quantity']);
                 $stmt_item->bindParam(":price", $item['price']);
                 $stmt_item->execute();
+            }
                 
                 // 3. Update Product Stock
                 $query_stock = "UPDATE products SET stock = stock - :qty WHERE id = :pid";

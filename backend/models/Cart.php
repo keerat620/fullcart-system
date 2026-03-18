@@ -13,22 +13,22 @@ class Cart {
     }
 
     public function addToCart() {
-        // Check if item already in cart
-        $check = "SELECT id, quantity FROM " . $this->table_name . " WHERE user_id = :user_id AND product_id = :product_id";
-        $stmt_check = $this->conn->prepare($check);
-        $stmt_check->bindParam(":user_id", $this->user_id);
-        $stmt_check->bindParam(":product_id", $this->product_id);
-        $stmt_check->execute();
+        // Check if item already exists
+        $query = "SELECT id, quantity FROM " . $this->table_name . " WHERE user_id = :user_id AND product_id = :product_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":user_id", $this->user_id);
+        $stmt->bindParam(":product_id", $this->product_id);
+        $stmt->execute();
 
-        if($stmt_check->rowCount() > 0) {
-            $row = $stmt_check->fetch(PDO::FETCH_ASSOC);
-            $new_qty = $row['quantity'] + $this->quantity;
-            $query = "UPDATE " . $this->table_name . " SET quantity = :qty WHERE id = :id";
+        if($stmt->rowCount() > 0) {
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            $new_quantity = $row['quantity'] + $this->quantity;
+            $query = "UPDATE " . $this->table_name . " SET quantity = :quantity WHERE id = :id";
             $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(":qty", $new_qty);
+            $stmt->bindParam(":quantity", $new_quantity);
             $stmt->bindParam(":id", $row['id']);
         } else {
-            $query = "INSERT INTO " . $this->table_name . " SET user_id=:user_id, product_id=:product_id, quantity=:quantity";
+            $query = "INSERT INTO " . $this->table_name . " (user_id, product_id, quantity) VALUES (:user_id, :product_id, :quantity)";
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(":user_id", $this->user_id);
             $stmt->bindParam(":product_id", $this->product_id);

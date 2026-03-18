@@ -20,7 +20,7 @@ class Review {
             return false;
         }
 
-        $query = "INSERT INTO " . $this->table_name . " SET product_id=:product_id, user_id=:user_id, rating=:rating, comment=:comment";
+        $query = "INSERT INTO " . $this->table_name . " (product_id, user_id, rating, comment) VALUES (:product_id, :user_id, :rating, :comment)";
         $stmt = $this->conn->prepare($query);
         
         $this->comment = htmlspecialchars(strip_tags($this->comment));
