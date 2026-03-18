@@ -15,6 +15,11 @@ class Review {
     }
 
     public function create() {
+        // Validate rating
+        if ($this->rating < 1 || $this->rating > 5) {
+            return false;
+        }
+
         $query = "INSERT INTO " . $this->table_name . " SET product_id=:product_id, user_id=:user_id, rating=:rating, comment=:comment";
         $stmt = $this->conn->prepare($query);
         

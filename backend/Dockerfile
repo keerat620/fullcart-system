@@ -9,6 +9,9 @@ RUN a2enmod rewrite
 # Copy backend files to the web root
 COPY . /var/www/html/
 
+# Set permissions for uploads
+RUN chown -R www-data:www-data /var/www/html
+
 # Set working directory
 WORKDIR /var/www/html/
 

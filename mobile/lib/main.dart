@@ -74,7 +74,7 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = true);
     try {
       final response = await http.post(
-        Uri.parse('http://10.0.2.2/fullcart%20system/backend/api/auth/login.php'),
+        Uri.parse('https://fullcart-backend.onrender.com/api/auth/login.php'),
         body: jsonEncode({
           'email': _emailController.text,
           'password': _passwordController.text,
@@ -180,7 +180,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() => _isLoading = true);
     try {
       final response = await http.post(
-        Uri.parse('http://10.0.2.2/fullcart%20system/backend/api/auth/register.php'),
+        Uri.parse('https://fullcart-backend.onrender.com/api/auth/register.php'),
         body: jsonEncode({
           'name': _nameController.text,
           'email': _emailController.text,
@@ -275,7 +275,7 @@ class _HomePageState extends State<HomePage> {
   _fetchProducts({String search = ''}) async {
     setState(() => _isLoading = true);
     try {
-      final url = Uri.parse('http://10.0.2.2/fullcart%20system/backend/api/products/list.php?search=$search');
+      final url = Uri.parse('https://fullcart-backend.onrender.com/api/products/list.php?search=$search');
       final response = await http.get(url);
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -297,7 +297,7 @@ class _HomePageState extends State<HomePage> {
   _addToCart(int productId) async {
     try {
       final response = await http.post(
-        Uri.parse('http://10.0.2.2/fullcart%20system/backend/api/cart/index.php'),
+        Uri.parse('https://fullcart-backend.onrender.com/api/cart/index.php'),
         body: jsonEncode({
           'user_id': _userId,
           'product_id': productId,
@@ -471,7 +471,7 @@ class _CartScreenState extends State<CartScreen> {
   _fetchCart() async {
     final prefs = await SharedPreferences.getInstance();
     final user = jsonDecode(prefs.getString('user')!);
-    final url = Uri.parse('http://10.0.2.2/fullcart%20system/backend/api/cart/index.php?user_id=${user['id']}');
+    final url = Uri.parse('https://fullcart-backend.onrender.com/api/cart/index.php?user_id=${user['id']}');
     final response = await http.get(url);
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -487,7 +487,7 @@ class _CartScreenState extends State<CartScreen> {
     final prefs = await SharedPreferences.getInstance();
     final user = jsonDecode(prefs.getString('user')!);
     final response = await http.post(
-      Uri.parse('http://10.0.2.2/fullcart%20system/backend/api/orders/index.php'),
+      Uri.parse('https://fullcart-backend.onrender.com/api/orders/index.php'),
       body: jsonEncode({
         'user_id': user['id'],
         'shipping_address': 'My Default Home Address',
@@ -574,7 +574,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   _fetchOrders() async {
     final prefs = await SharedPreferences.getInstance();
     final user = jsonDecode(prefs.getString('user')!);
-    final url = Uri.parse('http://10.0.2.2/fullcart%20system/backend/api/orders/index.php?user_id=${user['id']}');
+    final url = Uri.parse('https://fullcart-backend.onrender.com/api/orders/index.php?user_id=${user['id']}');
     final response = await http.get(url);
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);

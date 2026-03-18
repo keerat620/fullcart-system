@@ -92,7 +92,7 @@ try {
     foreach($tables as $sql) {
         $db->exec($sql);
     }
-    echo "<h1>Success!</h1><p>Database tables created successfully on Render.</p><a href='seed.php'>Next: Add Products</a>";
+    echo "<!DOCTYPE html><html><head><title>Setup Successful</title><style>body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #f0f2f5; } .card { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; } h1 { color: #28a745; } .btn { display: inline-block; background: #febd69; color: #111; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold; margin-top: 1rem; } .btn:hover { background: #f3a847; }</style></head><body><div class='card'><h1>Success!</h1><p>Database tables created successfully on Render.</p><a href='seed.php' class='btn'>Next: Seed Initial Products</a></div></body></html>";
     
 } catch(PDOException $e) {
     echo "Error: " . $e->getMessage();

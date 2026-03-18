@@ -36,7 +36,7 @@ if($num > 0) {
     http_response_code(200);
     echo json_encode($products_arr);
 } else {
-    http_response_code(404);
+    http_response_code(200);
     echo json_encode(array("message" => "No products found.", "records" => []));
 }
 ?>
