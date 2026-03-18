@@ -1,5 +1,5 @@
 const CONFIG = {
     API_BASE: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
         ? '../backend/api' 
-        : 'https://fullcart-backend.onrender.com/api' // Place your final Render URL here
+        : 'https://fullcart-backend.onrender.com/api'
 };
