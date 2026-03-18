@@ -195,10 +195,12 @@
                     if(data.records) data.records.forEach(product => {
                         html += `
                             <div class="product-card">
-                                <img src="${product.image_url}">
-                                <h3>${product.title}</h3>
-                                <div class="rating">★★★★☆ <span style="color:#007185;font-size:12px">(1,200)</span></div>
-                                <div class="price">₹${parseFloat(product.price).toFixed(2)}<img src="https://m.media-amazon.com/images/G/31/marketing/fba/prime-badge-32._CB485936079_.png" class="prime-tag"></div>
+                                <a href="product.html?id=${product.id}" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; flex-grow: 1;">
+                                    <img src="${product.image_url}">
+                                    <h3>${product.title}</h3>
+                                    <div class="rating">★★★★☆ <span style="color:#007185;font-size:12px">(1,200)</span></div>
+                                    <div class="price">₹${parseFloat(product.price).toFixed(2)}<img src="https://m.media-amazon.com/images/G/31/marketing/fba/prime-badge-32._CB485936079_.png" class="prime-tag"></div>
+                                </a>
                                 <button class="add-to-cart" onclick="addToCart(${product.id})">Add to Cart</button>
                             </div>`;
                     });

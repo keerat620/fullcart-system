@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - Fullcart</title>
+    <script src="js/config.js"></script>
+    <style>
+        :root { --amazon-blue: #131921; --amazon-light-blue: #232f3e; --amazon-yellow: #febd69; --amazon-orange: #f08804; --amazon-gray: #eaeded; }
+        body { font-family: "Amazon Ember", Arial, sans-serif; margin: 0; padding: 0; background-color: #fff; color: #0F1111; }
+        
+        /* Nav Bar - Reused from index */
+        header { background-color: var(--amazon-blue); color: white; padding: 10px 20px; position: sticky; top: 0; z-index: 100; }
+        .header-top { display: flex; align-items: center; gap: 15px; }
+        .logo-text { color: white; font-size: 24px; font-weight: bold; text-decoration: none; display: flex; align-items: center; min-width: 120px; }
+        .logo-text span { color: var(--amazon-orange); }
+        .search-bar { flex-grow: 1; display: flex; height: 40px; }
+        .search-bar select { padding: 0 10px; background: #f3f3f3; border: none; border-radius: 4px 0 0 4px; border-right: 1px solid #ddd; cursor: pointer; }
+        .search-bar input { flex-grow: 1; border: none; padding: 0 15px; font-size: 16px; outline: none; }
+        .search-bar button { padding: 0 15px; background-color: var(--amazon-yellow); border: none; border-radius: 0 4px 4px 0; cursor: pointer; font-size: 20px; }
+        .nav-links { display: flex; gap: 15px; font-size: 14px; }
+        .nav-links a { color: white; text-decoration: none; display: flex; flex-direction: column; padding: 5px; border: 1px solid transparent; }
+        .nav-links a:hover { border: 1px solid white; }
+        .nav-links .line-1 { font-size: 12px; }
+        .nav-links .line-2 { font-weight: bold; }
+        .header-bottom { background-color: var(--amazon-light-blue); padding: 5px 20px; display: flex; align-items: center; gap: 15px; font-size: 14px; color: white; }
+
+        /* 3-Column Product Layout */
+        .pdp-container { max-width: 1500px; margin: 20px auto; padding: 0 20px; display: grid; grid-template-columns: 40% 40% 20%; gap: 20px; }
+        
+        /* Column 1: Images */
+        .img-col { position: sticky; top: 120px; display: flex; gap: 15px; height: fit-content; }
+        .img-thumbnails { display: flex; flex-direction: column; gap: 10px; width: 40px; }
+        .img-thumbnails img { width: 40px; height: 40px; border: 1px solid #a2a6ac; border-radius: 4px; cursor: pointer; padding: 2px; }
+        .img-thumbnails img:hover { border-color: #e77600; box-shadow: 0 0 3px 2px rgba(228,121,17,.5); }
+        .main-image { flex-grow: 1; text-align: center; }
+        .main-image img { max-width: 100%; max-height: 500px; object-fit: contain; }
+
+        /* Column 2: Details */
+        .details-col h1 { font-size: 24px; font-weight: 400; line-height: 32px; margin-bottom: 5px; }
+        .brand-link { color: #007185; text-decoration: none; font-size: 14px; }
+        .brand-link:hover { text-decoration: underline; color: #c45500; }
+        .ratings-row { display: flex; align-items: center; gap: 10px; margin: 10px 0; font-size: 14px; color: #007185; }
+        .ratings-row .stars { color: #ffa41c; font-size: 18px; }
+        .amazon-choice { background-color: #232F3E; color: white; padding: 4px 8px; font-size: 12px; display: inline-block; clip-path: polygon(0 0, 100% 0, 95% 50%, 100% 100%, 0 100%); margin-bottom: 10px; }
+        .price-block { margin: 15px 0; border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 15px 0; }
+        .price-block .discount { color: #cc0c39; font-size: 24px; vertical-align: top; margin-right: 10px; }
+        .price-block .price { font-size: 28px; font-weight: 500; }
+        .mrp { font-size: 14px; color: #565959; text-decoration: line-through; }
+        .bullets { font-size: 14px; line-height: 20px; padding-left: 20px; }
+        .bullets li { margin-bottom: 5px; }
+
+        /* Column 3: Buy Box */
+        .buy-box { border: 1px solid #D5D9D9; border-radius: 8px; padding: 18px; height: fit-content; position: sticky; top: 120px; }
+        .buy-box .price { font-size: 24px; font-weight: 500; margin-bottom: 10px; }
+        .delivery { font-size: 14px; margin-bottom: 15px; }
+        .delivery b { font-weight: 700; }
+        .delivery a { color: #007185; text-decoration: none; }
+        .in-stock { color: #007600; font-size: 18px; margin-bottom: 10px; }
+        .qty-select { padding: 5px; border: 1px solid #D5D9D9; border-radius: 8px; background: #F0F2F2; width: 100%; margin-bottom: 15px; outline: none; }
+        .btn-add { background-color: #ffd814; border: 1px solid #FCD200; border-radius: 20px; padding: 8px; width: 100%; cursor: pointer; margin-bottom: 10px; font-size: 13px; box-shadow: 0 2px 5px rgba(213,217,217,.5); }
+        .btn-buy { background-color: #ffa41c; border: 1px solid #FF8F00; border-radius: 20px; padding: 8px; width: 100%; cursor: pointer; margin-bottom: 15px; font-size: 13px; box-shadow: 0 2px 5px rgba(213,217,217,.5); }
+        .btn-add:hover { background-color: #f7ca00; }
+        .btn-buy:hover { background-color: #fa8900; }
+        .secure { color: #007185; font-size: 14px; display: flex; align-items: center; gap: 5px; margin-bottom: 15px; }
+        
+        #toast { visibility: hidden; min-width: 250px; background-color: #067D62; color: #fff; text-align: center; border-radius: 4px; padding: 16px; position: fixed; z-index: 1000; top: 30px; left: 50%; transform: translateX(-50%); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        #toast.show { visibility: visible; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <a href="index.html" class="logo-text">fullcart<span>.in</span></a>
+            <div class="search-bar">
+                <select id="category-filter"><option value="">All</option></select>
+                <input type="text" id="search-input" placeholder="Search Fullcart.in">
+                <button id="search-button">🔍</button>
+            </div>
+            <div class="nav-links" id="nav-links">
+                <a href="account.html" id="user-display"><span class="line-1">Hello, Sign in</span><span class="line-2">Account</span></a>
+                <a href="orders.html"><span class="line-1">Returns</span><span class="line-2">& Orders</span></a>
+                <a href="cart.html" id="cart-count"><span class="line-1">Cart</span><span class="line-2">🛒 (0)</span></a>
+            </div>
+        </div>
+    </header>
+    
+    <div class="header-bottom">
+        <span onclick="window.location.href='index.html'">☰ All</span>
+        <span>Best Sellers</span><span>Mobiles</span><span>Deals</span><span>Electronics</span>
+    </div>
+
+    <div class="pdp-container" id="pdp-content">
+        <div style="grid-column: span 3; text-align: center; padding: 50px;">
+            <h2>Loading product details...</h2>
+        </div>
+    </div>
+
+    <div id="toast">Added to cart</div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+
+        function updateCartCount() {
+            if(!user) return;
+            fetch(`${CONFIG.API_BASE}/cart/index.php?user_id=${user.id}`).then(res => res.json()).then(data => {
+                const count = data.records ? data.records.reduce((acc, item) => acc + parseInt(item.quantity), 0) : 0;
+                document.getElementById('cart-count').innerHTML = `<span class="line-1">Cart</span><span class="line-2">🛒 (${count})</span>`;
+            });
+        }
+
+        function addToCart(qty = 1, buyNow = false) {
+            if(!user) { window.location.href = 'login.html'; return; }
+            fetch(`${CONFIG.API_BASE}/cart/index.php`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: user.id, product_id: productId, quantity: qty })
+            }).then(res => res.json()).then(data => {
+                if(buyNow) {
+                    window.location.href = 'checkout.html';
+                } else {
+                    const t = document.getElementById("toast"); t.textContent = data.message; t.className = "show";
+                    setTimeout(() => t.className = "", 3000); updateCartCount();
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (user) {
+                document.getElementById('user-display').innerHTML = `<span class="line-1">Hello, ${user.name.split(' ')[0]}</span><span class="line-2">Account</span>`;
+                updateCartCount();
+            }
+
+            if(productId) {
+                fetch(`${CONFIG.API_BASE}/products/list.php?id=${productId}`).then(res => res.json()).then(data => {
+                    // Find the specific product since the API might return all if it doesn't support ID filtering
+                    const product = data.records ? data.records.find(p => p.id == productId) : null;
+                    
+                    if(product) {
+                        const price = parseFloat(product.price);
+                        const mrp = (price * 1.2).toFixed(2); // Dummy MRP 20% higher
+                        
+                        document.getElementById('pdp-content').innerHTML = `
+                            <div class="img-col">
+                                <div class="img-thumbnails">
+                                    <img src="${product.image_url}" onmouseover="document.getElementById('main-img').src=this.src">
+                                    <img src="https://m.media-amazon.com/images/I/61N98Xh+cCL._AC_UY327_FMwebp_QL65_.jpg" onmouseover="document.getElementById('main-img').src=this.src">
+                                </div>
+                                <div class="main-image">
+                                    <img id="main-img" src="${product.image_url}" alt="${product.title}">
+                                </div>
+                            </div>
+                            
+                            <div class="details-col">
+                                <h1>${product.title}</h1>
+                                <a href="#" class="brand-link">Visit the Fullcart Store</a>
+                                <div class="ratings-row">
+                                    <span class="stars">★★★★☆</span>
+                                    <span>1,204 ratings</span> | <span>10K+ bought in past month</span>
+                                </div>
+                                <div class="amazon-choice">Amazon's Choice</div>
+                                
+                                <div class="price-block">
+                                    <span class="discount">-20%</span>
+                                    <span class="price"><span style="font-size:14px; vertical-align:top">$</span>${price.toFixed(2)}</span>
+                                    <div class="mrp">M.R.P.: $${mrp}</div>
+                                    <div style="font-size:14px; margin-top:5px">Inclusive of all taxes</div>
+                                </div>
+                                
+                                <div style="font-weight:700; font-size:16px; margin-bottom:10px">About this item</div>
+                                <ul class="bullets">
+                                    <li>${product.description}</li>
+                                    <li>Premium build quality and authentic design.</li>
+                                    <li>1 Year Fullcart Warranty included.</li>
+                                    <li>Compatible with all major ecosystems.</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="buy-box">
+                                <div class="price">$${price.toFixed(2)}</div>
+                                <div class="delivery">FREE delivery <b>Tomorrow, March 19</b>. Order within 5 hrs 30 mins. <a href="#">Details</a></div>
+                                <div class="in-stock">In stock</div>
+                                <select class="qty-select" id="qty-select">
+                                    <option value="1">Quantity: 1</option><option value="2">Quantity: 2</option><option value="3">Quantity: 3</option>
+                                </select>
+                                <button class="btn-add" onclick="addToCart(document.getElementById('qty-select').value)">Add to Cart</button>
+                                <button class="btn-buy" onclick="addToCart(document.getElementById('qty-select').value, true)">Buy Now</button>
+                                <div class="secure">🔒 Secure transaction</div>
+                                <div style="font-size:12px; color:#565959; margin-top:10px">
+                                    Ships from <span style="float:right">Fullcart</span><br>
+                                    Sold by <span style="float:right">Fullcart Retail</span>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        document.getElementById('pdp-content').innerHTML = `<h2>Product not found</h2>`;
+                    }
+                });
+            } else {
+                document.getElementById('pdp-content').innerHTML = `<h2>No product specified</h2>`;
+            }
+        });
+    </script>
+</body>
+</html>

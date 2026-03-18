@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Account - Fullcart</title>
+    <script src="js/config.js"></script>
+    <style>
+        :root { --amazon-blue: #131921; --amazon-light-blue: #232f3e; --amazon-yellow: #febd69; --amazon-orange: #f08804; --amazon-gray: #eaeded; }
+        body { font-family: "Amazon Ember", Arial, sans-serif; margin: 0; padding: 0; background-color: #fff; color: #0F1111; }
+        
+        /* Nav Bar - Reused */
+        header { background-color: var(--amazon-blue); color: white; padding: 10px 20px; position: sticky; top: 0; z-index: 100; }
+        .header-top { display: flex; align-items: center; gap: 15px; }
+        .logo-text { color: white; font-size: 24px; font-weight: bold; text-decoration: none; display: flex; align-items: center; min-width: 120px; }
+        .logo-text span { color: var(--amazon-orange); }
+        .search-bar { flex-grow: 1; display: flex; height: 40px; }
+        .search-bar select { padding: 0 10px; background: #f3f3f3; border: none; border-radius: 4px 0 0 4px; border-right: 1px solid #ddd; cursor: pointer; }
+        .search-bar input { flex-grow: 1; border: none; padding: 0 15px; font-size: 16px; outline: none; }
+        .search-bar button { padding: 0 15px; background-color: var(--amazon-yellow); border: none; border-radius: 0 4px 4px 0; cursor: pointer; font-size: 20px; }
+        .nav-links { display: flex; gap: 15px; font-size: 14px; }
+        .nav-links a { color: white; text-decoration: none; display: flex; flex-direction: column; padding: 5px; border: 1px solid transparent; }
+        .nav-links a:hover { border: 1px solid white; }
+        .nav-links .line-1 { font-size: 12px; }
+        .nav-links .line-2 { font-weight: bold; }
+        .header-bottom { background-color: var(--amazon-light-blue); padding: 5px 20px; display: flex; align-items: center; gap: 15px; font-size: 14px; color: white; }
+
+        /* Account Layout */
+        .account-container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+        h1 { font-weight: 400; font-size: 28px; margin-bottom: 20px; }
+        
+        .account-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .account-card { border: 1px solid #D5D9D9; border-radius: 8px; padding: 20px; display: flex; align-items: flex-start; gap: 15px; cursor: pointer; transition: 0.2s; text-decoration: none; color: inherit; }
+        .account-card:hover { background-color: #f7fafa; }
+        .card-icon { font-size: 40px; color: #007185; }
+        .card-content h3 { margin: 0 0 5px 0; font-size: 17px; font-weight: 400; }
+        .card-content p { margin: 0; font-size: 14px; color: #565959; }
+        
+        .logout-btn { display: inline-block; margin-top: 30px; background-color: #fff; border: 1px solid #D5D9D9; border-radius: 8px; padding: 10px 20px; color: #0f1111; text-decoration: none; font-size: 14px; box-shadow: 0 2px 5px rgba(213,217,217,.5); cursor: pointer; }
+        .logout-btn:hover { background-color: #F7FAFA; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <a href="index.html" class="logo-text">fullcart<span>.in</span></a>
+            <div class="search-bar">
+                <select id="category-filter"><option value="">All</option></select>
+                <input type="text" id="search-input" placeholder="Search Fullcart.in">
+                <button id="search-button">🔍</button>
+            </div>
+            <div class="nav-links" id="nav-links">
+                <a href="account.html" id="user-display"><span class="line-1">Hello, Sign in</span><span class="line-2">Account</span></a>
+                <a href="orders.html"><span class="line-1">Returns</span><span class="line-2">& Orders</span></a>
+                <a href="cart.html" id="cart-count"><span class="line-1">Cart</span><span class="line-2">🛒 (0)</span></a>
+            </div>
+        </div>
+    </header>
+    
+    <div class="header-bottom">
+        <span onclick="window.location.href='index.html'">☰ All</span>
+        <span>Best Sellers</span><span>Mobiles</span><span>Deals</span><span>Electronics</span>
+    </div>
+
+    <div class="account-container">
+        <h1>Your Account</h1>
+        <div class="account-grid">
+            <a href="orders.html" class="account-card">
+                <div class="card-icon">📦</div>
+                <div class="card-content">
+                    <h3>Your Orders</h3>
+                    <p>Track, return, or buy things again</p>
+                </div>
+            </a>
+            <a href="#" class="account-card">
+                <div class="card-icon">🔒</div>
+                <div class="card-content">
+                    <h3>Login & security</h3>
+                    <p>Edit login, name, and mobile number</p>
+                </div>
+            </a>
+            <a href="#" class="account-card">
+                <div class="card-icon">⭐</div>
+                <div class="card-content">
+                    <h3>Prime</h3>
+                    <p>View benefits and payment settings</p>
+                </div>
+            </a>
+            <a href="#" class="account-card">
+                <div class="card-icon">📍</div>
+                <div class="card-content">
+                    <h3>Your Addresses</h3>
+                    <p>Edit addresses for orders and gifts</p>
+                </div>
+            </a>
+            <a href="#" class="account-card" id="seller-card" style="display:none;">
+                <div class="card-icon">🏪</div>
+                <div class="card-content">
+                    <h3>Seller Dashboard</h3>
+                    <p>Manage products and view sales</p>
+                </div>
+            </a>
+        </div>
+        
+        <button class="logout-btn" onclick="logout()">Sign Out</button>
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+        
+        function updateCartCount() {
+            if(!user) return;
+            fetch(`${CONFIG.API_BASE}/cart/index.php?user_id=${user.id}`).then(res => res.json()).then(data => {
+                const count = data.records ? data.records.reduce((acc, item) => acc + parseInt(item.quantity), 0) : 0;
+                document.getElementById('cart-count').innerHTML = `<span class="line-1">Cart</span><span class="line-2">🛒 (${count})</span>`;
+            });
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            document.getElementById('user-display').innerHTML = `<span class="line-1">Hello, ${user.name.split(' ')[0]}</span><span class="line-2">Account</span>`;
+            updateCartCount();
+
+            if(user.role === 'seller' || user.role === 'admin') {
+                document.getElementById('seller-card').style.display = 'flex';
+                document.getElementById('seller-card').href = 'seller_dashboard.html';
+            }
+        });
+    </script>
+</body>
+</html>
